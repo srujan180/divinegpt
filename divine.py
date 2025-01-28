@@ -40,7 +40,7 @@ def handle_gpt(question):
                 answer = result.get("text", "No answer found")  # Extract the actual text
             else:
                 answer = result
-            st.session_state.conversation_history.append({"question": question, "answer": result})
+            st.session_state.conversation_history.append({"question": question, "answer": result.content})
             st.write(f"Answer: {result.content}")
     else:
         st.write("Please enter a question to get an answer.")
