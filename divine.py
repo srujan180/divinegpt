@@ -36,6 +36,10 @@ def handle_gpt(question):
     if question:
         with st.spinner('Thinking...'):
             result = chain.invoke({"question": question})  # Use invoke instead of run
+            if isinstance(result, dict):  # Check if the response includes metadata
+                answer = result.get("text", "No answer found")  # Extract the actual text
+            else:
+                answer = result
             st.session_state.conversation_history.append({"question": question, "answer": result})
             st.write(f"Answer: {result}")
     else:
