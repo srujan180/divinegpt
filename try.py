@@ -4,7 +4,6 @@ from google.cloud import language_v1
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
 
 credentials_base64 = os.environ.get("GOOGLE_CREDENTIALS_BASE64")
 if credentials_base64:
@@ -15,6 +14,7 @@ if credentials_base64:
 
 client = language_v1.LanguageServiceClient()
 
+# Langchain setup
 API_KEY = os.environ.get("API_KEY")
 llm = ChatGoogleGenerativeAI(
     apiKey=API_KEY,
@@ -24,7 +24,7 @@ llm = ChatGoogleGenerativeAI(
 prompt_template = "Question: {question}\nAnswer:"
 prompt = PromptTemplate.from_template(prompt_template)
 
-chain = LLMChain(llm=llm, prompt=prompt)
+chain = prompt | llm
 
 st.title("DivineGPT")
 
@@ -35,7 +35,7 @@ user_question = st.text_input("Ask your Question:")
 def handle_gpt(question):
     if question:
         with st.spinner('Thinking...'):
-            result = chain.run(question=question)  # Get the answer from the chain
+            result = chain.invoke({"question": question})  # Use invoke instead of run
             st.session_state.conversation_history.append({"question": question, "answer": result})
             st.write(f"Answer: {result}")
     else:
@@ -51,9 +51,5 @@ st.markdown("### Example Questions")
 st.write("- What is the capital of France?")
 st.write("- Can you explain quantum computing in simple terms?")
 
-handle_gpt(user_question)
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8501))
-    st.write(f"Running on port {port}")
-    st.run(host="0.0.0.0", port=port)
+handle_gpt(user_question)
