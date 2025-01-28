@@ -41,7 +41,7 @@ def handle_gpt(question):
             else:
                 answer = result
             st.session_state.conversation_history.append({"question": question, "answer": result})
-            st.write(f"Answer: {result['content']}")
+            st.write(f"Answer: {result.content}")
     else:
         st.write("Please enter a question to get an answer.")
 
